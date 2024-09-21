@@ -40,12 +40,13 @@ public class Server {
                 return;
             }
 
-            String path = requestLine.split(" ")[1];
+             Request request = new Request(requestLine);
+            String path = request.getPath();
             if (!VALID_PATHS.contains(path)) {
                 sendResponse(out, "404 Not Found", "text/plain", 0);
                 return;
             }
-            serveFile(out, path);
+            serveFile(out, path, request);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -63,7 +64,7 @@ public class Server {
                 parts[2].equals("HTTP/1.1");
     }
 
-    private void serveFile(OutputStream out, String path) throws IOException {
+    private void serveFile(OutputStream out, String path, Request request) throws IOException {
         var filePath = Path.of(".", "public", path);
         var mimeType = Files.probeContentType(filePath);
 
